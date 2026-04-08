@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Modificar Contraseña</title>
+
+<style>
+
+/* GENERAL */
+body{
+margin:0;
+font-family: Arial, Helvetica, sans-serif;
+background:#4a148c;
+}
+
+/* HEADER */
+header{
+background:#9c27b0;
+color:white;
+padding:15px 25px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+/* TEXTO HEADER */
+.user-text{
+font-size:22px;
+font-weight:bold;
+}
+
+/* ADMIN TEXTO */
+#nombreUsuario{
+font-size:18px;
+font-weight:bold;
+background:white;
+color:#4a148c;
+padding:6px 12px;
+border-radius:8px;
+}
+
+/* CONTENEDOR */
+.container{
+display:flex;
+justify-content:center;
+align-items:center;
+min-height:90vh;
+}
+
+/* TARJETA */
+.card{
+background:white;
+padding:40px;
+border-radius:12px;
+box-shadow:0 5px 15px rgba(0,0,0,0.2);
+width:420px;
+text-align:center;
+}
+
+.card h1{
+color:#4a148c;
+margin-bottom:20px;
+}
+
+/* INPUTS */
+.info{
+margin-bottom:15px;
+text-align:left;
+}
+
+.info label{
+display:block;
+margin-bottom:5px;
+}
+
+.info input{
+width:100%;
+padding:10px;
+border-radius:8px;
+border:1px solid #ccc;
+}
+
+/* BOTONES */
+button{
+width:100%;
+padding:12px;
+margin-top:10px;
+border:none;
+border-radius:8px;
+background:#9c27b0;
+color:white;
+font-size:15px;
+font-weight:bold;
+cursor:pointer;
+}
+
+button:hover{
+background:#7b1fa2;
+}
+
+/* BOTÓN SECUNDARIO */
+.btn-secundario{
+background:#6a1b9a;
+}
+
+.btn-secundario:hover{
+background:#4a148c;
+}
+
+/* MENSAJE */
+#mensaje{
+text-align:center;
+margin-top:15px;
+font-weight:bold;
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+<div class="user-text">Sistema De Registro DIF</div>
+<div id="nombreUsuario"></div>
+</header>
+
+<div class="container">
+<div class="card">
+
+<h1>Modificar Contraseña</h1>
+
+<!-- 🔥 FORM SIN AUTOCOMPLETADO -->
+<form autocomplete="off">
+
+<div class="info">
+<label>Usuario</label>
+<input type="text" id="usuario" placeholder="Ingresa tu usuario" autocomplete="off">
+</div>
+
+<div class="info">
+<label>Ficha</label>
+<input type="text" id="ficha" placeholder="Ingresa tu ficha" autocomplete="off">
+</div>
+
+<div class="info">
+<label>CURP</label>
+<input type="text" id="curp" maxlength="18" placeholder="Ingresa tu CURP" autocomplete="off">
+</div>
+
+<div class="info">
+<label>Nueva contraseña</label>
+<input type="password" id="nuevaContrasena" placeholder="Nueva contraseña" autocomplete="new-password">
+</div>
+
+<button type="button" onclick="modificarContrasena()">Modificar</button>
+<button type="button" class="btn-secundario" onclick="regresar()">⬅ Regresar</button>
+
+<p id="mensaje"></p>
+
+</form>
+
+</div>
+</div>
+
+<script>
+
+// 🔐 SESIÓN
+const usuarioSesion = localStorage.getItem('usuario');
+
+if (!usuarioSesion) {
+window.location.replace('index.html');
+}
+
+// HEADER ADMIN
+document.getElementById('nombreUsuario').textContent =
+`Administrador: ${usuarioSesion}`;
+
+
+// 🔥 LIMPIAR CAMPOS AL CARGAR
+window.onload = function(){
+document.getElementById('usuario').value = "";
+document.getElementById('ficha').value = "";
+document.getElementById('curp').value = "";
+document.getElementById('nuevaContrasena').value = "";
+};
+
+
+// -------- MODIFICAR CONTRASEÑA --------
+function modificarContrasena() {
+
+const usuario = document.getElementById('usuario').value.trim();
+const ficha = document.getElementById('ficha').value.trim();
+const curp = document.getElementById('curp').value.trim();
+const nuevaPass = document.getElementById('nuevaContrasena').value.trim();
+const mensaje = document.getElementById('mensaje');
+
+if (!usuario || !ficha || !curp || !nuevaPass) {
+mensaje.style.color = 'red';
+mensaje.textContent = "⚠️ Todos los campos son obligatorios.";
+return;
+}
+
+fetch('actualizar_contrasena.php', {
+method: 'POST',
+headers: { 'Content-Type': 'application/json' },
+body: JSON.stringify({
+usuario: usuario,
+ficha: ficha,
+curp: curp,
+contrasena: nuevaPass
+})
+})
+.then(response => response.json())
+.then(data => {
+
+if (data.success) {
+mensaje.style.color = 'green';
+mensaje.innerHTML = `
+${data.mensaje}<br><br>
+<button onclick="regresarPanel()" 
+style="padding:10px; border:none; border-radius:8px; background:#6a1b9a; color:white; cursor:pointer;">
+Volver al Panel
+</button>
+`;
+
+document.getElementById('usuario').value = "";
+document.getElementById('ficha').value = "";
+document.getElementById('curp').value = "";
+document.getElementById('nuevaContrasena').value = "";
+
+} else {
+mensaje.style.color = 'red';
+mensaje.textContent = data.mensaje;
+}
+})
+.catch(() => {
+mensaje.style.color = 'red';
+mensaje.textContent = "❌ Error de conexión con el servidor.";
+});
+}
+
+// -------- REGRESAR --------
+function regresar() {
+window.location.href = 'administrador.html';
+}
+
+function regresarPanel() {
+window.location.href = 'administrador.html';
+}
+
+// BLOQUEAR ATRÁS
+history.pushState(null, null, location.href);
+window.addEventListener('popstate', function() {
+history.pushState(null, null, location.href);
+});
+
+</script>
+
+</body>
+</html>

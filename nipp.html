@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ingresar NIPP</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family: Arial, Helvetica, sans-serif;
+}
+
+/* FONDO */
+body{
+background:#4a148c;
+min-height:100vh;
+}
+
+/* HEADER */
+header{
+background:#9c27b0;
+padding:15px 25px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+position:relative;
+}
+
+/* TEXTO HEADER */
+.sistema{
+color:white;
+font-size:22px;
+font-weight:bold;
+}
+
+/* MENU */
+.menu-box{
+display:none;
+position:absolute;
+top:60px;
+right:20px;
+background:white;
+padding:10px;
+border-radius:8px;
+box-shadow:0 3px 8px rgba(0,0,0,0.3);
+}
+
+.menu-box button{
+background:#9c27b0;
+color:white;
+border:none;
+padding:8px 15px;
+border-radius:6px;
+cursor:pointer;
+font-weight:bold;
+}
+
+.menu-box button:hover{
+background:#7b1fa2;
+}
+
+/* CONTENEDOR */
+.container{
+display:flex;
+justify-content:center;
+align-items:center;
+height:85vh;
+}
+
+/* TARJETA */
+.card{
+background:white;
+padding:40px;
+border-radius:12px;
+box-shadow:0 10px 20px rgba(0,0,0,0.25);
+width:400px;
+text-align:center;
+}
+
+/* TITULO */
+.card h1{
+color:#4a148c;
+margin-bottom:25px;
+}
+
+/* INPUT */
+input{
+width:100%;
+padding:12px;
+margin-bottom:20px;
+border-radius:6px;
+border:1px solid #ccc;
+font-size:14px;
+}
+
+/* BOTONES */
+.actions{
+display:flex;
+justify-content:space-between;
+margin-top:20px;
+}
+
+.actions button{
+padding:12px 18px;
+border:none;
+border-radius:8px;
+background:#9c27b0;
+color:white;
+font-size:14px;
+font-weight:bold;
+cursor:pointer;
+}
+
+.actions button:hover{
+background:#7b1fa2;
+}
+
+/* MENSAJE */
+#mensaje{
+margin-top:20px;
+font-weight:bold;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+<div class="sistema">
+Sistema DIF
+</div>
+</header>
+
+<div class="container">
+
+<div class="card">
+
+<h1>Ingresar NIPP</h1>
+
+<input type="text" id="nipp" placeholder="Código recibido" autocomplete="off">
+
+<div class="actions">
+<button onclick="regresar()">Regresar</button>
+<button onclick="verificarNipp()">Verificar</button>
+</div>
+
+<p id="mensaje"></p>
+
+</div>
+</div>
+
+<script>
+
+// ---------------- MENÚ ----------------
+function cerrarSesion(){
+window.location.href='index.html';
+}
+
+// ---------------- PROTECCIÓN ----------------
+const codigoOriginal = sessionStorage.getItem("nippGuardado");
+const usuario = sessionStorage.getItem("usuarioGuardado");
+
+if(!codigoOriginal || !usuario){
+window.location.href="olvide_contrasena.html";
+}
+
+// ---------------- LÓGICA NIPP ----------------
+let intentos = 0;
+const maxIntentos = 3;
+
+function verificarNipp(){
+
+const nippIngresado = document.getElementById('nipp').value.trim();
+const mensaje = document.getElementById('mensaje');
+
+if(!nippIngresado){
+
+mensaje.style.color='red';
+mensaje.textContent="Por favor ingresa el código.";
+return;
+
+}
+
+if(nippIngresado === codigoOriginal){
+
+mensaje.style.color='green';
+mensaje.textContent="✅ Código correcto. Redirigiendo...";
+
+sessionStorage.setItem("verificado","true");
+sessionStorage.removeItem("nippGuardado");
+
+setTimeout(()=>{
+window.location.href="modificar.html";
+},1000);
+
+}else{
+
+intentos++;
+
+if(intentos < maxIntentos){
+
+mensaje.style.color='red';
+mensaje.textContent=`❌ Código incorrecto. Te quedan ${maxIntentos-intentos} intento(s).`;
+
+}else{
+
+mensaje.style.color='red';
+mensaje.textContent="❌ Has excedido los intentos. Serás redirigido...";
+
+setTimeout(()=>{
+window.location.href='olvide_contrasena.html';
+},1500);
+
+}
+
+}
+
+}
+
+function regresar(){
+window.location.href='olvide_contrasena.html';
+}
+
+/* 🔥 EVITAR CACHE */
+window.onload = function(){
+
+document.getElementById('nipp').value = '';
+
+if (performance.getEntriesByType("navigation")[0].type === "back_forward") {
+    window.location.reload(true);
+}
+
+};
+
+/* 🔥 BLOQUEAR BOTÓN ATRÁS (FUERTE) */
+(function () {
+let contador = 1;
+
+function bloquearBack() {
+  if (contador < 100) {
+    window.location.hash = "no-back-button";
+    window.location.hash = "Again-No-back-button";
+    contador++;
+  }
+}
+
+window.onhashchange = function () {
+  bloquearBack();
+};
+
+bloquearBack();
+})();
+
+</script>
+
+</body>
+</html>

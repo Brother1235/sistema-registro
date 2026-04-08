@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verificación Telefónica</title>
+
+<!-- 🔥 BOOTSTRAP -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family: Arial, Helvetica, sans-serif;
+}
+
+/* 🔥 FONDO */
+body{
+min-height:100vh;
+background:linear-gradient(rgba(74,20,140,0.7),rgba(74,20,140,0.7));
+display:flex;
+flex-direction:column;
+}
+
+/* 🔥 HEADER */
+header{
+background:#9c27b0;
+color:white;
+padding:15px 20px;
+display:flex;
+align-items:center;
+justify-content:space-between;
+}
+
+/* TEXTO HEADER */
+.user-text{
+font-size:clamp(1.2rem,4vw,1.5rem);
+font-weight:bold;
+}
+
+/* 🔥 CONTENEDOR */
+.main-container{
+flex-grow:1;
+display:flex;
+justify-content:center;
+align-items:center;
+padding:15px;
+}
+
+/* 🔥 TARJETA */
+.card{
+background:white;
+padding:30px;
+border-radius:20px;
+box-shadow:0 10px 25px rgba(0,0,0,0.2);
+width:100%;
+max-width:420px;
+text-align:center;
+}
+
+/* TITULO */
+.card h1{
+color:#4a148c;
+font-size:clamp(1.4rem,5vw,2rem);
+margin-bottom:10px;
+}
+
+/* MENSAJE */
+.mensaje{
+margin-bottom:25px;
+font-size:clamp(0.9rem,3vw,1rem);
+}
+
+/* INPUTS */
+.form-group{
+margin-bottom:15px;
+text-align:left;
+}
+
+.form-group label{
+display:block;
+margin-bottom:5px;
+font-weight:bold;
+font-size:clamp(0.8rem,2.5vw,0.95rem);
+}
+
+.form-group input{
+width:100%;
+padding:10px;
+border-radius:8px;
+border:1px solid #ccc;
+font-size:clamp(0.85rem,2.5vw,0.95rem);
+}
+
+/* 🔥 BOTONES */
+.botones{
+display:flex;
+gap:10px;
+margin-top:15px;
+}
+
+.botones button{
+flex:1;
+padding:12px;
+border:none;
+border-radius:12px;
+background:#9c27b0;
+color:white;
+font-size:clamp(0.9rem,3vw,1rem);
+font-weight:bold;
+cursor:pointer;
+transition:0.3s;
+}
+
+.botones button:hover{
+background:#7b1fa2;
+}
+
+/* MENSAJE RESPUESTA */
+#mensajeRespuesta{
+margin-top:15px;
+font-weight:bold;
+font-size:clamp(0.85rem,2.5vw,1rem);
+}
+
+/* 📱 CELULAR */
+@media (max-width:768px){
+
+.card{
+padding:20px;
+border-radius:15px;
+}
+
+.botones{
+flex-direction:column;
+}
+
+}
+
+</style>
+
+</head>
+<body>
+
+<header>
+<div class="user-text">Sistema DIF</div>
+</header>
+
+<div class="main-container">
+<div class="card">
+
+<h1>Verificación Telefónica</h1>
+
+<p class="mensaje">
+Escriba sus datos para rectificar que está registrado en nuestro sistema.
+</p>
+
+<div class="form-group">
+<label for="responsable">Usuario</label>
+<input type="text" id="responsable" placeholder="Ingrese el nombre del usuario">
+</div>
+
+<div class="form-group">
+<label for="localidad">CURP DEL RESPONSABLE</label>
+<input 
+type="text" 
+id="localidad" 
+placeholder="Ingrese la CURP"
+maxlength="18"
+style="text-transform: uppercase;"
+oninput="this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '')"
+>
+</div>
+
+<div class="botones">
+<button onclick="regresar()">⬅ Regresar</button>
+<button onclick="revisarDatos()">✔ Revisar</button>
+</div>
+
+<p id="mensajeRespuesta"></p>
+
+</div>
+</div>
+
+<script>
+
+// Cerrar sesión
+function cerrarSesion() {
+window.location.href = "index.html";
+}
+
+// Regresar
+function regresar(){
+window.location.href = "elegir.html";
+}
+
+// ✔ Verificar datos
+async function revisarDatos(){
+
+const responsable = document.getElementById("responsable").value.trim();
+const localidad = document.getElementById("localidad").value.trim().toUpperCase();
+const mensaje = document.getElementById("mensajeRespuesta");
+
+if(!responsable || !localidad){
+mensaje.style.color = "red";
+mensaje.textContent = "❌ Complete todos los campos.";
+return;
+}
+
+if(localidad.length !== 18){
+mensaje.style.color = "red";
+mensaje.textContent = "❌ La CURP debe tener 18 caracteres.";
+return;
+}
+
+mensaje.style.color = "blue";
+mensaje.textContent = "Verificando datos...";
+
+try {
+
+const respuesta = await fetch("php/verificar_usuario.php", {
+method: "POST",
+headers: { "Content-Type": "application/json" },
+body: JSON.stringify({
+usuario: responsable,
+curp: localidad
+})
+});
+
+const data = await respuesta.json();
+
+if(data.success){
+mensaje.style.color = "green";
+mensaje.textContent = "✔ Datos correctos. Redirigiendo...";
+
+setTimeout(() => {
+window.location.href = "telefono1.php";
+}, 1500);
+
+} else {
+mensaje.style.color = "red";
+mensaje.textContent = "❌ " + data.mensaje;
+}
+
+} catch(error){
+mensaje.style.color = "red";
+mensaje.textContent = "Error al conectar con el servidor.";
+}
+
+}
+
+// 🚫 Bloquear botón atrás
+window.addEventListener('load', function () {
+history.pushState(null, null, location.href);
+window.addEventListener('popstate', function () {
+history.pushState(null, null, location.href);
+});
+});
+
+</script>
+
+</body>
+</html>

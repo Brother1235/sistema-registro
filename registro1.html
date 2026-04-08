@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Registro de Usuario</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family: Arial, Helvetica, sans-serif;
+}
+
+/* FONDO */
+body{
+background:#4a148c;
+min-height:100vh;
+}
+
+/* HEADER */
+header{
+background:#9c27b0;
+padding:15px 25px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+position:relative;
+}
+
+/* TEXTO HEADER */
+.user-text{
+color:white;
+font-size:22px;
+font-weight:bold;
+}
+
+/* ICONO MENU */
+.menu-icon{
+cursor:pointer;
+}
+
+.menu-icon div{
+width:30px;
+height:4px;
+background:white;
+margin:5px 0;
+border-radius:3px;
+}
+
+/* MENU */
+.menu-box{
+display:none;
+position:absolute;
+top:60px;
+right:20px;
+background:white;
+padding:10px;
+border-radius:8px;
+box-shadow:0 3px 8px rgba(0,0,0,0.3);
+}
+
+.menu-box button{
+background:#9c27b0;
+color:white;
+border:none;
+padding:8px 15px;
+border-radius:6px;
+cursor:pointer;
+font-weight:bold;
+}
+
+.menu-box button:hover{
+background:#7b1fa2;
+}
+
+/* CONTENEDOR */
+.container{
+background:white;
+max-width:700px;
+margin:60px auto;
+padding:40px;
+border-radius:12px;
+box-shadow:0 10px 20px rgba(0,0,0,0.25);
+}
+
+/* TITULO */
+.container h2{
+text-align:center;
+color:#4a148c;
+margin-bottom:30px;
+}
+
+/* GRID */
+.form-grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:20px;
+}
+
+/* CAMPOS */
+.form-group{
+display:flex;
+flex-direction:column;
+}
+
+.form-group label{
+font-weight:bold;
+margin-bottom:5px;
+}
+
+.form-group input{
+padding:10px;
+border-radius:6px;
+border:1px solid #ccc;
+font-size:14px;
+}
+
+/* BOTONES */
+.actions{
+margin-top:30px;
+display:flex;
+justify-content:space-between;
+}
+
+.actions button{
+padding:12px 20px;
+border:none;
+border-radius:8px;
+font-size:15px;
+font-weight:bold;
+cursor:pointer;
+}
+
+.btn-regresar{
+background:#9c27b0;
+color:white;
+}
+
+.btn-regresar:hover{
+background:#7b1fa2;
+}
+
+.btn-registrar{
+background:#9c27b0;
+color:white;
+}
+
+.btn-registrar:hover{
+background:#7b1fa2;
+}
+
+/* MENSAJE */
+#mensaje{
+margin-top:20px;
+text-align:center;
+font-weight:bold;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+
+<div class="user-text">
+Sistema DIF
+</div>
+
+<div class="menu-box" id="menuBox">
+<button onclick="cerrarSesion()">Cerrar sesión</button>
+</div>
+
+</header>
+
+<div class="container">
+
+<h2>Registro de Usuario</h2>
+
+<form id="formRegistro" autocomplete="off">
+
+<div class="form-grid">
+
+<div class="form-group">
+<label>Nombre</label>
+<input type="text" id="nombre" placeholder="Ingrese nombre">
+</div>
+
+<div class="form-group">
+<label>Apellido</label>
+<input type="text" id="apellido" placeholder="Ingrese apellido">
+</div>
+
+<div class="form-group">
+<label>Correo electrónico</label>
+<input type="email" id="correo" placeholder="Ingrese correo">
+</div>
+
+<div class="form-group">
+<label>Teléfono</label>
+<input type="tel" id="telefono" placeholder="Número de teléfono">
+</div>
+
+<div class="form-group">
+<label>CURP DEL RESPONSABLE</label>
+<input 
+type="text"
+id="curp"
+maxlength="18"
+placeholder="Ingrese CURP"
+style="text-transform: uppercase;"
+oninput="this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '')"
+>
+</div>
+
+<div class="form-group">
+<label>Contraseña</label>
+<input type="password" id="contrasena" autocomplete="new-password" placeholder="Ingrese contraseña">
+</div>
+
+</div>
+
+<div class="actions">
+<button type="button" class="btn-regresar" onclick="regresar()">Regresar</button>
+<button type="submit" class="btn-registrar">Registrar Usuario</button>
+</div>
+
+</form>
+
+<p id="mensaje"></p>
+
+</div>
+
+<script>
+
+window.onload = function () {
+document.getElementById("formRegistro").reset();
+};
+
+function toggleMenu() {
+const menu = document.getElementById('menuBox');
+menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+}
+
+function cerrarSesion() {
+window.location.href = 'index.html';
+}
+
+function regresar() {
+window.location.href = 'index.html';
+}
+
+/* REGISTRO USUARIO */
+document.getElementById("formRegistro").addEventListener("submit", async function(e) {
+
+e.preventDefault();
+
+const nombre = document.getElementById('nombre').value.trim();
+const apellido = document.getElementById('apellido').value.trim();
+const correo = document.getElementById('correo').value.trim();
+const telefono = document.getElementById('telefono').value.trim();
+const curp = document.getElementById('curp').value.trim();
+const contrasena = document.getElementById('contrasena').value.trim();
+const mensaje = document.getElementById('mensaje');
+
+if (!nombre || !apellido || !correo || !telefono || !curp || !contrasena) {
+
+mensaje.style.color = 'red';
+mensaje.textContent = "Todos los campos son obligatorios.";
+return;
+
+}
+
+mensaje.style.color = 'blue';
+mensaje.textContent = "Registrando usuario...";
+
+try {
+
+const respuesta = await fetch("php/agregar_usuario.php", {
+
+method: "POST",
+headers: { "Content-Type": "application/json" },
+
+body: JSON.stringify({
+usuario: nombre,
+apellido: apellido,
+correo: correo,
+telefono: telefono,
+curp: curp,
+contrasena: contrasena
+})
+
+});
+
+const data = await respuesta.json();
+
+mensaje.style.color = data.success ? 'green' : 'red';
+mensaje.textContent = data.mensaje;
+
+if (data.success) {
+document.getElementById("formRegistro").reset();
+}
+
+} catch (error) {
+
+mensaje.style.color = 'red';
+mensaje.textContent = "Error al conectar con el servidor.";
+
+}
+
+});
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Administrador - Subir Imágenes</title>
+
+<style>
+
+/* GENERAL */
+body{
+margin:0;
+font-family: Arial, Helvetica, sans-serif;
+background:#4a148c;
+}
+
+/* HEADER */
+header{
+background:#9c27b0;
+color:white;
+padding:15px 25px; /* ✔ tamaño equilibrado */
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+/* TEXTO HEADER */
+.user-text{
+font-size:22px;
+font-weight:bold;
+}
+
+/* ADMIN TEXTO */
+#nombreUsuario{
+font-size:18px;
+font-weight:bold;
+background:white;
+color:#4a148c;
+padding:6px 12px;
+border-radius:8px;
+}
+
+/* CONTENEDOR */
+.container{
+display:flex;
+justify-content:center;
+align-items:center;
+min-height:90vh;
+}
+
+/* TARJETA */
+.card{
+background:white;
+padding:40px;
+border-radius:12px;
+box-shadow:0 5px 15px rgba(0,0,0,0.2);
+width:420px;
+text-align:center;
+}
+
+.card h2{
+color:#4a148c;
+margin-bottom:10px;
+}
+
+/* INPUT */
+input[type="file"]{
+width:100%;
+margin:10px 0;
+padding:10px;
+border-radius:8px;
+border:1px solid #ccc;
+}
+
+/* PREVIEW */
+.preview{
+margin:15px 0;
+display:flex;
+flex-wrap:wrap;
+gap:10px;
+justify-content:center;
+}
+
+.preview img{
+width:90px;
+height:90px;
+border-radius:10px;
+object-fit:cover;
+}
+
+/* BOTÓN REEMPLAZAR */
+.replace-btn{
+margin-top:5px;
+background:#9c27b0;
+color:white;
+border:none;
+padding:5px 10px;
+border-radius:6px;
+cursor:pointer;
+}
+
+.replace-btn:hover{
+background:#7b1fa2;
+}
+
+/* BOTONES */
+button{
+width:100%;
+padding:15px;
+margin-top:10px;
+border:none;
+border-radius:8px;
+background:#9c27b0;
+color:white;
+font-size:15px;
+font-weight:bold;
+cursor:pointer;
+}
+
+button:hover{
+background:#7b1fa2;
+}
+
+/* CANCELAR */
+.cancel-btn{
+background:#999;
+}
+
+.cancel-btn:hover{
+background:#777;
+}
+
+/* REGRESAR */
+.regresar{
+display:block;
+margin-top:15px;
+background:#4a148c;
+padding:12px;
+color:white;
+text-decoration:none;
+border-radius:8px;
+}
+
+.regresar:hover{
+background:#6a1b9a;
+}
+
+/* COMENTARIOS */
+.comentarios-box{
+margin-top:20px;
+text-align:left;
+}
+
+.comentarios-box h3{
+color:#4a148c;
+}
+
+.comentarios-box textarea{
+width:100%;
+height:90px;
+border-radius:8px;
+padding:10px;
+border:1px solid #ccc;
+margin-top:10px;
+}
+
+.comentarios-box button{
+margin-top:10px;
+background:#6a1b9a;
+}
+
+.comentarios-box button:hover{
+background:#4a148c;
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+<div class="user-text">Sistema De Registro DIF</div>
+<div id="nombreUsuario"></div>
+</header>
+
+<div class="container">
+
+<div class="card">
+
+<h2>Actualizar Carrusel</h2>
+
+<form id="formImagenes" action="subir_imagen.php" method="POST" enctype="multipart/form-data">
+
+<p>Imagen 1</p>
+<input type="file" name="imagen1" accept="image/*" onchange="previewImage(event, 0)" required>
+
+<p>Imagen 2</p>
+<input type="file" name="imagen2" accept="image/*" onchange="previewImage(event, 1)" required>
+
+<p>Imagen 3</p>
+<input type="file" name="imagen3" accept="image/*" onchange="previewImage(event, 2)" required>
+
+<p>Imagen 4</p>
+<input type="file" name="imagen4" accept="image/*" onchange="previewImage(event, 3)" required>
+
+<div class="preview" id="preview"></div>
+
+<button type="submit">Subir Imágenes</button>
+<button type="button" class="cancel-btn" onclick="cancelForm()">Cancelar</button>
+
+</form>
+
+<a class="regresar" href="administrador.html">
+⬅ Volver al sistema
+</a>
+
+<!-- COMENTARIOS -->
+<div class="comentarios-box">
+<h3>Comentarios</h3>
+
+<textarea id="comentario" placeholder="Escribe un comentario..."></textarea>
+
+<button onclick="guardarComentario()">Guardar comentario</button>
+</div>
+
+</div>
+</div>
+
+<script>
+
+// 🔐 SESIÓN
+const usuarioSesion = localStorage.getItem('usuario');
+
+if (!usuarioSesion) {
+window.location.replace('index.html');
+}
+
+// 🔥 CAMBIO AQUÍ
+document.getElementById('nombreUsuario').textContent =
+`Administrador: ${usuarioSesion}`;
+
+
+// PREVIEW
+const previewContainer = document.getElementById('preview');
+const imgElements = [];
+const replaceButtons = [];
+const inputFiles = document.querySelectorAll('input[type="file"]');
+
+for(let i=0; i<4; i++){
+const wrapper = document.createElement('div');
+
+const img = document.createElement('img');
+img.style.display = 'none';
+
+const btn = document.createElement('button');
+btn.innerText = 'Reemplazar';
+btn.classList.add('replace-btn');
+btn.style.display = 'none';
+btn.onclick = () => replaceImage(i);
+
+wrapper.appendChild(img);
+wrapper.appendChild(btn);
+previewContainer.appendChild(wrapper);
+
+imgElements.push(img);
+replaceButtons.push(btn);
+}
+
+function previewImage(event, index){
+const file = event.target.files[0];
+if(file){
+const reader = new FileReader();
+reader.onload = function(e){
+imgElements[index].src = e.target.result;
+imgElements[index].style.display = 'block';
+replaceButtons[index].style.display = 'inline-block';
+}
+reader.readAsDataURL(file);
+}
+}
+
+function replaceImage(index){
+imgElements[index].src = '';
+imgElements[index].style.display = 'none';
+replaceButtons[index].style.display = 'none';
+inputFiles[index].value = '';
+}
+
+function cancelForm(){
+document.getElementById('formImagenes').reset();
+imgElements.forEach((img, i) => {
+img.style.display = 'none';
+replaceButtons[i].style.display = 'none';
+});
+}
+
+// COMENTARIO
+function guardarComentario(){
+
+const comentario = document.getElementById("comentario").value;
+
+if(comentario.trim() === ""){
+alert("Escribe un comentario");
+return;
+}
+
+fetch("guardar_comentario.php", {
+method: "POST",
+headers: {
+"Content-Type": "application/json"
+},
+body: JSON.stringify({
+id: 1,
+comentario: comentario
+})
+})
+.then(res => res.json())
+.then(data => {
+if(data.success){
+alert("Comentario guardado");
+document.getElementById("comentario").value = "";
+}else{
+alert("Error al guardar");
+}
+});
+}
+
+</script>
+
+</body>
+</html>

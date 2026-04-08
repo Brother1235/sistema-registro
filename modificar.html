@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Modificar Contraseña</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family: Arial, Helvetica, sans-serif;
+}
+
+/* FONDO */
+body{
+background:#4a148c;
+min-height:100vh;
+}
+
+/* HEADER */
+header{
+background:#9c27b0;
+padding:15px 25px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+position:relative;
+}
+
+/* TEXTO HEADER */
+.sistema{
+color:white;
+font-size:22px;
+font-weight:bold;
+}
+
+/* MENU */
+.menu-box{
+display:none;
+position:absolute;
+top:60px;
+right:20px;
+background:white;
+padding:10px;
+border-radius:8px;
+box-shadow:0 3px 8px rgba(0,0,0,0.3);
+}
+
+.menu-box button{
+background:#9c27b0;
+color:white;
+border:none;
+padding:8px 15px;
+border-radius:6px;
+cursor:pointer;
+font-weight:bold;
+}
+
+.menu-box button:hover{
+background:#7b1fa2;
+}
+
+/* CONTENEDOR */
+.container{
+display:flex;
+justify-content:center;
+align-items:center;
+height:85vh;
+}
+
+/* TARJETA */
+.card{
+background:white;
+padding:40px;
+border-radius:12px;
+width:400px;
+text-align:center;
+box-shadow:0 10px 20px rgba(0,0,0,0.25);
+}
+
+/* TITULO */
+.card h1{
+color:#4a148c;
+margin-bottom:25px;
+}
+
+/* CAMPOS */
+.info{
+text-align:left;
+margin-bottom:15px;
+}
+
+label{
+font-weight:bold;
+display:block;
+margin-bottom:5px;
+}
+
+input{
+width:100%;
+padding:12px;
+border-radius:6px;
+border:1px solid #ccc;
+font-size:14px;
+}
+
+/* BOTONES */
+.actions{
+display:flex;
+justify-content:space-between;
+margin-top:20px;
+}
+
+.actions button{
+padding:12px 18px;
+border:none;
+border-radius:8px;
+background:#9c27b0;
+color:white;
+font-size:14px;
+font-weight:bold;
+cursor:pointer;
+}
+
+.actions button:hover{
+background:#7b1fa2;
+}
+
+/* MENSAJE */
+#mensaje{
+margin-top:20px;
+font-weight:bold;
+text-align:center;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+<div class="sistema">Sistema DIF</div>
+</header>
+
+<div class="container">
+<div class="card">
+
+<h1>Modificar Contraseña</h1>
+
+<div class="info">
+<label for="usuario">Usuario</label>
+<input type="text" id="usuario" readonly>
+</div>
+
+<div class="info">
+<label for="nuevaContrasena">Nueva contraseña</label>
+<input type="password" id="nuevaContrasena" placeholder="Nueva contraseña" autocomplete="off">
+</div>
+
+<div class="actions">
+<button onclick="regresar()">Regresar</button>
+<button onclick="modificarContrasena()">Modificar</button>
+</div>
+
+<p id="mensaje"></p>
+
+</div>
+</div>
+
+<script>
+
+// ---------------- MENÚ ----------------
+function cerrarSesion(){
+window.location.href='index.html';
+}
+
+// ---------------- PROTECCIÓN ----------------
+const verificado=sessionStorage.getItem("verificado");
+const usuario=sessionStorage.getItem("usuarioGuardado");
+
+if(verificado!=="true" || !usuario){
+window.location.href="olvide_contrasena.html";
+}
+
+document.getElementById('usuario').value=usuario;
+
+// ---------------- MODIFICAR CONTRASEÑA ----------------
+function modificarContrasena(){
+
+const nuevaPass=document.getElementById('nuevaContrasena').value.trim();
+const mensaje=document.getElementById('mensaje');
+
+if(!nuevaPass){
+mensaje.style.color='red';
+mensaje.textContent="Por favor ingresa la nueva contraseña.";
+return;
+}
+
+fetch('actualizar_contrasena.php',{
+method:'POST',
+headers:{'Content-Type':'application/json'},
+body:JSON.stringify({usuario:usuario,contrasena:nuevaPass})
+})
+.then(response=>response.json())
+.then(data=>{
+if(data.success){
+mensaje.style.color='green';
+mensaje.textContent=data.mensaje;
+
+/* 🔥 LIMPIAR SESIÓN COMPLETA */
+sessionStorage.clear();
+
+setTimeout(()=>{ 
+window.location.href='index.html'; 
+},1500);
+
+}else{
+mensaje.style.color='red';
+mensaje.textContent=data.mensaje;
+}
+})
+.catch(error=>{
+mensaje.style.color='red';
+mensaje.textContent="Error de conexión con el servidor.";
+});
+
+}
+
+function regresar(){
+window.location.href='olvide_contrasena.html';
+}
+
+/* 🔥 EVITAR CACHE */
+window.onload = function(){
+
+document.getElementById('nuevaContrasena').value = '';
+
+if (performance.getEntriesByType("navigation")[0].type === "back_forward") {
+    window.location.reload(true);
+}
+
+};
+
+/* 🔥 BLOQUEAR BOTÓN ATRÁS (FUERTE) */
+(function () {
+let contador = 1;
+
+function bloquearBack() {
+  if (contador < 100) {
+    window.location.hash = "no-back-button";
+    window.location.hash = "Again-No-back-button";
+    contador++;
+  }
+}
+
+window.onhashchange = function () {
+  bloquearBack();
+};
+
+bloquearBack();
+})();
+
+</script>
+
+</body>
+</html>

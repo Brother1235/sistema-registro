@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Recuperar acceso</title>
+
+<!-- 🔥 BOOTSTRAP -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family: Arial, Helvetica, sans-serif;
+}
+
+/* 🔥 FONDO */
+body{
+min-height:100vh;
+background:linear-gradient(rgba(74,20,140,0.7),rgba(74,20,140,0.7));
+display:flex;
+flex-direction:column;
+}
+
+/* 🔥 HEADER */
+header{
+background:#9c27b0;
+color:white;
+padding:15px 20px;
+display:flex;
+align-items:center;
+justify-content:space-between;
+}
+
+/* TEXTO HEADER */
+.user-text{
+font-size:clamp(1.2rem,4vw,1.5rem);
+font-weight:bold;
+}
+
+/* 🔥 CONTENEDOR CENTRADO */
+.main-container{
+flex-grow:1;
+display:flex;
+justify-content:center;
+align-items:center;
+padding:15px;
+}
+
+/* 🔥 TARJETA */
+.card{
+background:white;
+padding:30px;
+border-radius:20px;
+box-shadow:0 10px 25px rgba(0,0,0,0.2);
+width:100%;
+max-width:420px;
+text-align:center;
+}
+
+/* TITULOS */
+.card h1{
+color:#4a148c;
+font-size:clamp(1.5rem,5vw,2rem);
+margin-bottom:10px;
+}
+
+.card p{
+margin-bottom:25px;
+font-size:clamp(0.9rem,3vw,1rem);
+}
+
+/* 🔥 BOTONES */
+.lista-opciones button{
+width:100%;
+padding:12px;
+margin-bottom:12px;
+border:none;
+border-radius:12px;
+background:#9c27b0;
+color:white;
+font-size:clamp(0.9rem,3vw,1rem);
+font-weight:bold;
+cursor:pointer;
+transition:0.3s;
+}
+
+.lista-opciones button:hover{
+background:#7b1fa2;
+}
+
+/* 🔥 CELULAR */
+@media (max-width:768px){
+
+.card{
+padding:20px;
+border-radius:15px;
+}
+
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+<div class="user-text">Sistema DIF</div>
+</header>
+
+<!-- 🔥 CONTENEDOR -->
+<div class="main-container">
+
+<div class="card">
+
+<h1>¿Olvidaste tu contraseña?</h1>
+
+<p>Selecciona una opción para recuperar tu acceso</p>
+
+<div class="lista-opciones">
+
+<button onclick="recuperarGmail()">
+📧 Recuperar con Gmail
+</button>
+
+<button onclick="contactarAdmin()">
+📞 Recuperar vía Telefónica
+</button>
+
+<button onclick="regresar()">
+⬅ Regresar
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+function cerrarSesion() {
+window.location.href = "index.html";
+}
+
+function recuperarGmail(){
+window.location.href = "olvide_contrasena.html";
+}
+
+function contactarAdmin(){
+window.location.href = "telefono.html";
+}
+
+function regresar(){
+window.location.href = "index.html";
+}
+
+window.addEventListener("pageshow", function(event) {
+if (event.persisted || performance.getEntriesByType("navigation")[0].type === "back_forward") {
+window.location.reload();
+}
+});
+
+</script>
+
+</body>
+</html>

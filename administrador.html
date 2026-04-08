@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel Administrador</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<style>
+
+/* GENERAL */
+body{
+    margin:0;
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background:#f4f6fb;
+    font-size:18px;
+}
+
+/* CONTENEDOR */
+.container{
+    display:flex;
+}
+
+/* SIDEBAR */
+.sidebar{
+    width:260px;
+    height:100vh;
+    background:linear-gradient(180deg,#6a1b9a,#4a148c);
+    color:white;
+    padding-top:25px;
+    position:fixed;
+}
+
+.sidebar h3{
+    text-align:center;
+    margin-bottom:25px;
+    font-size:22px;
+}
+
+/* MENÚ */
+.menu{
+    list-style:none;
+    padding:0;
+}
+
+.menu li{
+    margin:8px 12px;
+}
+
+.menu button{
+    width:100%;
+    padding:15px;
+    border:none;
+    background:none;
+    color:white;
+    cursor:pointer;
+    border-radius:10px;
+    text-align:left;
+    font-size:16px;
+    transition:0.3s;
+}
+
+.menu button:hover{
+    background:rgba(255,255,255,0.2);
+}
+
+/* MAIN */
+.main{
+    margin-left:260px;
+    flex:1;
+    padding:30px;
+}
+
+/* HEADER */
+.header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:25px;
+}
+
+.header h2{
+    color:#4a148c;
+    font-size:30px;
+}
+
+#nombreUsuario{
+    background:white;
+    padding:12px 18px;
+    border-radius:12px;
+    box-shadow:0 5px 10px rgba(0,0,0,0.1);
+}
+
+/* BIENVENIDA */
+.welcome{
+    margin-top:10px;
+    padding:20px;
+    border-radius:12px;
+    background:white;
+    box-shadow:0 5px 10px rgba(0,0,0,0.1);
+    font-size:20px;
+}
+
+/* TARJETAS */
+.cards{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+    gap:25px;
+    margin-top:25px;
+}
+
+.card{
+    background:white;
+    padding:30px;
+    border-radius:20px;
+    text-align:center;
+    box-shadow:0 12px 25px rgba(0,0,0,0.15);
+    transition:0.3s;
+    cursor:pointer;
+}
+
+.card:hover{
+    transform:translateY(-8px) scale(1.05);
+}
+
+.card h4{
+    margin:0;
+    font-size:20px;
+}
+
+.card p{
+    font-size:40px;
+    font-weight:bold;
+    margin-top:15px;
+    color:#4a148c;
+}
+
+/* GRAFICOS */
+.charts{
+    margin-top:35px;
+    padding:25px;
+    border-radius:20px;
+    background:white;
+    box-shadow:0 12px 25px rgba(0,0,0,0.15);
+}
+
+.charts h3{
+    font-size:22px;
+}
+
+.chart-container{
+    display:flex;
+    justify-content:space-around;
+    align-items:center;
+    margin-top:20px;
+}
+
+/* BARRAS */
+.bars{
+    display:flex;
+    gap:15px;
+    align-items:flex-end;
+    height:160px;
+}
+
+.bar{
+    width:35px;
+    background:#9c27b0;
+    border-radius:6px;
+}
+
+/* CIRCULO DINÁMICO */
+.circle{
+    width:160px;
+    height:160px;
+    border-radius:50%;
+    background:conic-gradient(#9c27b0 0% 50%, #ce93d8 50% 100%);
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+
+<h3>Control</h3>
+
+<ul class="menu">
+
+<li><button onclick="window.location.href='subir-unica.html'"><i class="fa fa-image"></i> editar ventana de logeo</button></li>
+<li><button onclick="window.location.href='subir_imagenes.html'"><i class="fa fa-image"></i> Editar Ventana Principal</button></li>
+<li><button onclick="window.location.href='admicontra.html'"><i class="fa fa-lock"></i> Modificar Contraseña</button></li>
+<li><button onclick="window.location.href='registrados.html'"><i class="fa fa-users"></i> Usuarios Registrados</button></li>
+<li><button onclick="window.location.href='datossubidos.html'"><i class="fa fa-database"></i> Datos Subidos</button></li>
+<li><button onclick="window.location.href='agregar_admi.html'"><i class="fa fa-user-plus"></i> Agregar Administrador</button></li>
+<li><button onclick="window.location.href='admi_telefono.php'"><i class="fa fa-phone"></i> Remplazar Teléfono</button></li>
+<li><button onclick="regresar()"><i class="fa fa-arrow-left"></i> Regresar</button></li>
+
+</ul>
+
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+<div class="header">
+<h2>Panel de Administrador</h2>
+<div id="nombreUsuario"></div>
+</div>
+
+<div class="welcome">
+Bienvenido al sistema de registro administrador
+</div>
+
+<!-- TARJETAS -->
+<div class="cards">
+
+<div class="card">
+<h4>Registrados</h4>
+<p id="totalUsuarios">0</p>
+</div>
+
+<div class="card">
+<h4>Datos Subidos</h4>
+<p id="totalDatos">0</p>
+</div>
+
+<div class="card">
+<h4>Hombres</h4>
+<p id="totalHombres">0</p>
+</div>
+
+<div class="card">
+<h4>Mujeres</h4>
+<p id="totalMujeres">0</p>
+</div>
+
+</div>
+
+<!-- GRAFICOS -->
+<div class="charts">
+
+<h3>Gráfico Estadístico</h3>
+
+<div class="chart-container">
+
+<div class="bars">
+<div class="bar" id="barHombres"></div>
+<div class="bar" id="barMujeres"></div>
+</div>
+
+<div class="circle" id="circleChart"></div>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+<script>
+
+// SESIÓN
+const usuarioSesion = localStorage.getItem('usuario');
+
+if (!usuarioSesion) {
+    window.location.replace('index.html');
+}
+
+// MOSTRAR USUARIO
+document.getElementById('nombreUsuario').textContent =
+  `👤 Administrador: ${usuarioSesion}`;
+
+// REGRESAR
+function regresar() {
+    localStorage.removeItem('usuario');
+    localStorage.removeItem('tipo');
+    window.location.href = "index.html?nocache=" + new Date().getTime();
+}
+
+window.addEventListener('load', function() {
+
+    // USUARIOS
+    fetch("contar_usuarios.php")
+    .then(res => res.json())
+    .then(data => {
+        if(data.success){
+            document.getElementById("totalUsuarios").textContent = data.total;
+        }
+    });
+
+    // DATOS
+    fetch("contar_datos.php")
+    .then(res => res.json())
+    .then(data => {
+        if(data.success){
+            document.getElementById("totalDatos").textContent = data.total;
+        }
+    });
+
+    // HOMBRES Y MUJERES
+    fetch("contar_sexo.php")
+    .then(res => res.json())
+    .then(data => {
+        if(data.success){
+
+            let hombres = parseInt(data.hombres);
+            let mujeres = parseInt(data.mujeres);
+            let total = hombres + mujeres;
+
+            document.getElementById("totalHombres").textContent = hombres;
+            document.getElementById("totalMujeres").textContent = mujeres;
+
+            // BARRAS DINÁMICAS
+            let alturaH = (hombres / total) * 150;
+            let alturaM = (mujeres / total) * 150;
+
+            document.getElementById("barHombres").style.height = alturaH + "px";
+            document.getElementById("barMujeres").style.height = alturaM + "px";
+
+            // CÍRCULO DINÁMICO
+            let porcentajeH = (hombres / total) * 100;
+
+            document.getElementById("circleChart").style.background =
+                `conic-gradient(#9c27b0 0% ${porcentajeH}%, #ce93d8 ${porcentajeH}% 100%)`;
+        }
+    });
+
+});
+</script>
+
+</body>
+</html>

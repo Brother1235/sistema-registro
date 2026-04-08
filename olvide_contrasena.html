@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Olvidé mi contraseña</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family: Arial, Helvetica, sans-serif;
+}
+
+/* FONDO */
+body{
+background:#4a148c;
+min-height:100vh;
+}
+
+/* HEADER */
+header{
+background:#9c27b0;
+padding:15px 25px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+position:relative;
+}
+
+/* TEXTO HEADER */
+.user-text{
+color:white;
+font-size:22px;
+font-weight:bold;
+}
+
+/* MENU */
+.menu-box{
+display:none;
+position:absolute;
+top:60px;
+right:20px;
+background:white;
+padding:10px;
+border-radius:8px;
+box-shadow:0 3px 8px rgba(0,0,0,0.3);
+}
+
+.menu-box button{
+background:#9c27b0;
+color:white;
+border:none;
+padding:8px 15px;
+border-radius:6px;
+cursor:pointer;
+font-weight:bold;
+}
+
+.menu-box button:hover{
+background:#7b1fa2;
+}
+
+/* CONTENEDOR */
+.container{
+display:flex;
+justify-content:center;
+align-items:center;
+height:85vh;
+}
+
+/* TARJETA */
+.card{
+background:white;
+padding:40px;
+border-radius:12px;
+box-shadow:0 10px 20px rgba(0,0,0,0.25);
+width:400px;
+}
+
+/* TITULO */
+.card h1{
+text-align:center;
+color:#4a148c;
+margin-bottom:30px;
+}
+
+/* CAMPOS */
+.form-group{
+margin-bottom:20px;
+display:flex;
+flex-direction:column;
+}
+
+.form-group label{
+font-weight:bold;
+margin-bottom:5px;
+}
+
+.form-group input{
+padding:10px;
+border-radius:6px;
+border:1px solid #ccc;
+font-size:14px;
+}
+
+/* BOTONES */
+.actions{
+display:flex;
+justify-content:space-between;
+margin-top:25px;
+}
+
+.actions button{
+padding:12px 18px;
+border:none;
+border-radius:8px;
+background:#9c27b0;
+color:white;
+font-size:14px;
+font-weight:bold;
+cursor:pointer;
+}
+
+.actions button:hover{
+background:#7b1fa2;
+}
+
+/* MENSAJE */
+#mensaje{
+margin-top:20px;
+text-align:center;
+font-weight:bold;
+}
+
+</style>
+
+</head>
+<body>
+
+<header>
+<div class="user-text">
+Sistema DIF
+</div>
+</header>
+
+<div class="container">
+
+<div class="card">
+
+<h1>Olvidé mi contraseña</h1>
+
+<div class="form-group">
+<label for="usuario">Usuario</label>
+<input type="text" id="usuario" placeholder="Ingrese su usuario">
+</div>
+
+<div class="form-group">
+<label for="correo">Correo electrónico</label>
+<input type="email" id="correo" placeholder="Ingrese su correo electrónico">
+</div>
+
+<div class="actions">
+<button onclick="regresar()">Regresar</button>
+<button onclick="enviarNIPP()">Enviar NIPP</button>
+</div>
+
+<p id="mensaje"></p>
+
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+
+<script>
+
+// 🔥 EMAILJS
+(function(){
+emailjs.init("cUhQcFRFqq9bCBBJU");
+})();
+
+// 🔙 FUNCIONES
+function cerrarSesion() {
+window.location.href = 'index.html';
+}
+
+function regresar() {
+window.location.href = 'index.html';
+}
+
+// 📧 ENVIAR NIPP
+function enviarNIPP() {
+
+const usuario = document.getElementById('usuario').value.trim();
+const correo = document.getElementById('correo').value.trim();
+const mensaje = document.getElementById('mensaje');
+
+if (!usuario || !correo) {
+mensaje.style.color = "red";
+mensaje.textContent = "❌ Por favor completa todos los campos.";
+return;
+}
+
+fetch("verificar_usuario.php", {
+method: "POST",
+headers: {
+"Content-Type": "application/json"
+},
+body: JSON.stringify({
+usuario: usuario,
+correo: correo
+})
+})
+.then(response => response.json())
+.then(data => {
+
+if (data.success) {
+
+const nipp = Math.floor(100000 + Math.random() * 900000);
+
+sessionStorage.setItem("nippGuardado", nipp);
+sessionStorage.setItem("usuarioGuardado", usuario);
+
+emailjs.send("service_kmbo77w", "template_qqp7zib", {
+usuario: usuario,
+correo: correo,
+codigo: nipp
+}).then(function() {
+
+mensaje.style.color = "green";
+mensaje.textContent =
+"✅ El NIPP fue enviado con éxito a tu correo electrónico.";
+
+setTimeout(() => {
+window.location.href = "nipp.html";
+}, 2000);
+
+}, function(error) {
+
+mensaje.style.color = "red";
+mensaje.textContent = "❌ Error al enviar el correo.";
+console.log(error);
+
+});
+
+} else {
+
+mensaje.style.color = "red";
+mensaje.textContent = "❌ " + data.mensaje;
+
+}
+
+})
+.catch(error => {
+mensaje.style.color = "red";
+mensaje.textContent = "❌ Error en el servidor.";
+console.log(error);
+});
+}
+
+/* 🔥 LIMPIAR + EVITAR CACHE */
+window.onload = function() {
+
+document.getElementById('usuario').value = '';
+document.getElementById('correo').value = '';
+
+if (performance.getEntriesByType("navigation")[0].type === "back_forward") {
+    window.location.reload(true);
+}
+
+};
+
+/* 🔥 BLOQUEO FUERTE BOTÓN ATRÁS */
+(function () {
+let contador = 1;
+
+function bloquearBack() {
+  if (contador < 100) {
+    window.location.hash = "no-back-button";
+    window.location.hash = "Again-No-back-button";
+    contador++;
+  }
+}
+
+window.onhashchange = function () {
+  bloquearBack();
+};
+
+bloquearBack();
+})();
+
+</script>
+
+</body>
+</html>

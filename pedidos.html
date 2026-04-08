@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Formulario de Registro</title>
+  <link rel="stylesheet" href="css/pedidos.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f7f7f7;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background-color: #2c3e50;
+      color: white;
+      padding: 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .menu-box button {
+      margin-right: 10px;
+      padding: 5px 10px;
+      cursor: pointer;
+    }
+    .container {
+      max-width: 600px;
+      margin: 20px auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    label {
+      font-weight: bold;
+    }
+    input, select, textarea {
+      padding: 8px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    button.submit-btn {
+      background-color: #3498db;
+      color: white;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    button.submit-btn:hover {
+      background-color: #2980b9;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ---------------- HEADER ---------------- -->
+  <header>
+    <div class="menu-icon" onclick="toggleMenu()">
+      <div></div><div></div><div></div>
+    </div>
+
+    <div class="menu-box" id="menuBox" style="display:none;">
+      <button onclick="cerrarSesion()">Cerrar sesión</button>
+      <button onclick="regresar()">Regresar</button>
+    </div>
+
+    <span class="user-text" id="nombreUsuario">Usuario: </span>
+  </header>
+
+  <!-- ---------------- CONTENIDO ---------------- -->
+  <div class="container">
+    <h2>📝 Formulario de Registro</h2>
+    <form id="formularioRegistro">
+      <label for="apellidoP">Apellido Paterno (Del solicitante):</label>
+      <input type="text" id="apellidoP" name="apellidoP" required>
+
+      <label for="apellidoM">Apellido Materno (Del solicitante):</label>
+      <input type="text" id="apellidoM" name="apellidoM" required>
+
+      <label for="nombres">Nombre(s):</label>
+      <input type="text" id="nombres" name="nombres" required>
+
+      <label for="fechaNac">Fecha de Nacimiento:</label>
+      <input type="date" id="fechaNac" name="fechaNac" required>
+
+      <label for="curp">CURP:</label>
+      <input type="text" id="curp" name="curp" required>
+
+      <label for="telefonoResp">Teléfono del Responsable:</label>
+      <input type="tel" id="telefonoResp" name="telefonoResp" required>
+
+      <label for="domicilio">Domicilio:</label>
+      <input type="text" id="domicilio" name="domicilio" required>
+
+      <label for="codigoPostal">Código Postal:</label>
+      <input type="text" id="codigoPostal" name="codigoPostal" required>
+
+      <label for="localidad">Localidad:</label>
+      <input type="text" id="localidad" name="localidad" required>
+
+      <label for="municipio">Municipio:</label>
+      <input type="text" id="municipio" name="municipio" value="Calpulalpan" required>
+
+      <label for="nombreResp">Nombre del Responsable:</label>
+      <input type="text" id="nombreResp" name="nombreResp" required>
+
+      <label for="telefonoResp2">Teléfono del Responsable:</label>
+      <input type="tel" id="telefonoResp2" name="telefonoResp2" required>
+
+      <label for="sexo">Sexo:</label>
+      <select id="sexo" name="sexo" required>
+        <option value="" disabled selected>Selecciona</option>
+        <option value="Masculino">Masculino</option>
+        <option value="Femenino">Femenino</option>
+      </select>
+
+      <label for="edad">Edad:</label>
+      <input type="number" id="edad" name="edad" min="0" required>
+
+      <label for="diagnostico">Diagnóstico:</label>
+      <textarea id="diagnostico" name="diagnostico" rows="3" required></textarea>
+
+      <label for="traslado">Traslado:</label>
+      <input type="text" id="traslado" name="traslado" value="Calpulalpan" required>
+
+      <button type="submit" class="submit-btn">Enviar Registro</button>
+    </form>
+  </div>
+
+  <script>
+    const usuarioSesion = localStorage.getItem('usuario');
+    if (!usuarioSesion) {
+      window.location.href = 'index.html';
+    }
+
+    document.getElementById('nombreUsuario').textContent = `Usuario: ${usuarioSesion}`;
+
+    function toggleMenu() {
+      const menu = document.getElementById('menuBox');
+      menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function cerrarSesion() {
+      localStorage.removeItem('usuario');
+      localStorage.removeItem('tipo');
+      window.location.href = "index.html";
+    }
+
+    function regresar() {
+      const paginaAnterior = document.referrer;
+      if (paginaAnterior) {
+        const urlRecargada = paginaAnterior.includes('?')
+          ? paginaAnterior + "&reload=1"
+          : paginaAnterior + "?reload=1";
+        window.location.href = urlRecargada;
+      } else {
+        history.back();
+      }
+    }
+
+    // Captura de formulario
+    document.getElementById('formularioRegistro').addEventListener('submit', function(e){
+      e.preventDefault();
+      const datos = Object.fromEntries(new FormData(this).entries());
+      console.log("Datos enviados:", datos);
+      alert("Formulario enviado correctamente");
+      // Aquí puedes hacer fetch a tu PHP para guardar los datos
+      // fetch("guardar_datos.php", {method: "POST", body: new FormData(this)})
+    });
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sistema de Registro - Calpulalpan</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body{
+  height:100vh;
+  display:flex;
+  flex-direction:column;
+  background: url('imagenes2/imagen.jpg') no-repeat center center;
+  background-size: cover;
+}
+
+.header-banner{
+  background:white;
+  padding:15px 5%;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  box-shadow:0 2px 5px rgba(0,0,0,0.1);
+}
+
+.header-logo{
+  height:80px;
+}
+
+.header-title{
+  text-align:center;
+  color:#4a148c;
+}
+
+.header-title h1{
+  font-size:2.3rem;
+  font-weight:bold;
+}
+
+.header-title p{
+  font-size:1.2rem;
+  color:#666;
+}
+
+.main-container{
+  flex-grow:1;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:20px;
+}
+
+.login-card{
+  background:white;
+  padding:40px 30px;
+  border-radius:20px;
+  width:100%;
+  max-width:450px;
+  text-align:center;
+  box-shadow:0 15px 35px rgba(0,0,0,0.2);
+  position:relative;
+}
+
+.logo-circular{
+  width:100px;
+  height:100px;
+  background:white;
+  border-radius:50%;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  margin:-90px auto 20px;
+  box-shadow:0 4px 10px rgba(0,0,0,0.1);
+  border:2px solid #f0f0f0;
+}
+
+.logo-circular i{
+  font-size:40px;
+  color:#9c27b0;
+}
+
+.login-card h2{
+  color:#333;
+  margin-bottom:5px;
+  font-size:1.6rem;
+}
+
+.subtitle{
+  color:#777;
+  margin-bottom:30px;
+  font-size:0.95rem;
+}
+
+.input-group{
+  position:relative;
+  margin-bottom:15px;
+}
+
+.input-group i{
+  position:absolute;
+  left:15px;
+  top:50%;
+  transform:translateY(-50%);
+  color:#9c27b0;
+}
+
+.input-group input{
+  width:100%;
+  padding:12px 12px 12px 45px;
+  border:1px solid #ddd;
+  border-radius:8px;
+  outline:none;
+  transition:border 0.3s;
+}
+
+.input-group input:focus{
+  border-color:#9c27b0;
+}
+
+.actions{
+  display:flex;
+  gap:10px;
+  margin-top:10px;
+}
+
+.actions button{
+  flex:1;
+  padding:12px;
+  background:#9c27b0;
+  color:white;
+  border:none;
+  border-radius:20px;
+  font-size:1rem;
+  cursor:pointer;
+  transition:background 0.3s;
+}
+
+.actions button:hover{
+  background:#7b1fa2;
+}
+
+.forgot-password{
+  display:block;
+  margin-top:20px;
+  color:#6a1b9a;
+  text-decoration:none;
+  font-size:0.9rem;
+}
+
+.forgot-password:hover{
+  text-decoration:underline;
+}
+
+#mensaje{
+  margin-top:10px;
+  font-weight:bold;
+}
+
+footer{
+  text-align:center;
+  padding:20px;
+  color:white;
+  font-size:0.9rem;
+  text-shadow:1px 1px 2px rgba(0,0,0,0.5);
+}
+</style>
+</head>
+
+<body>
+
+<header class="header-banner">
+  <img src="imagenes/dif6.png" class="header-logo">
+  <div class="header-title">
+    <h1>Sistema de Registro</h1>
+    <p>Seguimiento de Personas con Discapacidad</p>
+  </div>
+  <img src="imagenes/dif5.png" class="header-logo">
+</header>
+
+<div class="main-container">
+  <div class="login-card">
+    <div class="logo-circular">
+      <i class="fa-solid fa-heart-pulse"></i>
+    </div>
+
+    <h2>Acceso al Sistema ></h2>
+    <p class="subtitle">Ingresa tu usuario y contraseña para comenzar tu registro.</p>
+
+    <form autocomplete="off">
+      <div class="input-group">
+        <i class="fa-solid fa-user"></i>
+        <input type="text" id="usuario" name="usuario" placeholder="Usuario" autocomplete="off">
+      </div>
+
+      <div class="input-group">
+        <i class="fa-solid fa-lock"></i>
+        <input type="password" id="contrasena" name="contrasena" placeholder="Contraseña" autocomplete="new-password">
+      </div>
+
+      <div class="actions">
+        <button type="button" onclick="window.location.href='registro1.html'">Registrar</button>
+        <button type="button" onclick="iniciarSesion()">Iniciar Sesión</button>
+      </div>
+    </form>
+
+    <a href="elegir.html" class="forgot-password">¿Olvidó su contraseña?</a>
+    <p id="mensaje"></p>
+  </div>
+</div>
+
+<footer>
+Gobierno Municipal de Calpulalpan 2024 - 2027<br>
+Sistema de Registro v1.1.0
+</footer>
+
+<script>
+async function iniciarSesion() {
+  const usuario = document.getElementById('usuario').value.trim();
+  const contrasena = document.getElementById('contrasena').value.trim();
+  const mensaje = document.getElementById('mensaje');
+
+  if(!usuario || !contrasena){
+    mensaje.textContent = "Por favor, complete todos los campos.";
+    mensaje.style.color='red';
+    mensaje.style.opacity=1;
+    return;
+  }
+
+  try{
+    const response = await fetch('php/login.php',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({usuario,contrasena})
+    });
+
+    const data = await response.json();
+
+    if(data.success){
+      localStorage.setItem('usuario',data.usuario);
+      mensaje.style.color='green';
+      mensaje.textContent = data.mensaje;
+      mensaje.style.opacity=1;
+
+      setTimeout(()=>{mensaje.style.opacity=0;},1000);
+      setTimeout(()=>{ 
+        if(data.tipo==='admin'){
+          window.location.href='administrador.html';
+        } else {
+          window.location.href='realizar.html';
+        }
+      },1000);
+
+    } else {
+      mensaje.style.color='red';
+      mensaje.textContent = data.mensaje;
+      mensaje.style.opacity=1;
+      setTimeout(()=>{mensaje.style.opacity=0;},2000);
+    }
+
+  } catch(error){
+    mensaje.style.color='red';
+    mensaje.textContent="Error al conectar con el servidor.";
+    mensaje.style.opacity=1;
+    setTimeout(()=>{mensaje.style.opacity=0;},2000);
+  }
+}
+
+window.onload = function() {
+  document.getElementById('usuario').value = '';
+  document.getElementById('contrasena').value = '';
+
+  if (performance.getEntriesByType("navigation")[0].type === "back_forward") {
+      window.location.reload(true);
+  }
+};
+
+(function () {
+  let contador = 1;
+
+  function bloquearBack() {
+    if (contador < 100) {
+      window.location.hash = "no-back-button";
+      window.location.hash = "Again-No-back-button";
+      contador++;
+    }
+  }
+
+  window.onhashchange = function () {
+    bloquearBack();
+  };
+
+  bloquearBack();
+})();
+</script>
+
+</body>
+</html>

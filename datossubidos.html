@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Datos Subidos</title>
+
+<style>
+body{
+margin:0;
+font-family: Arial, Helvetica, sans-serif;
+background:#4a148c;
+}
+
+header{
+background:#9c27b0;
+color:white;
+padding:15px 25px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+.user-text{
+font-size:22px;
+font-weight:bold;
+}
+
+#nombreUsuario{
+font-size:18px;
+font-weight:bold;
+background:white;
+color:#4a148c;
+padding:6px 12px;
+border-radius:8px;
+}
+
+.contenedor{
+width:95%;
+margin:auto;
+margin-top:30px;
+background:white;
+padding:25px;
+border-radius:12px;
+box-shadow:0 5px 15px rgba(0,0,0,0.2);
+overflow-x:auto;
+}
+
+.regresar{
+background:#9c27b0;
+color:white;
+margin-bottom:15px;
+padding:10px 20px;
+border:none;
+border-radius:8px;
+cursor:pointer;
+font-weight:bold;
+}
+
+.regresar:hover{
+background:#7b1fa2;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+font-size:13px;
+}
+
+th,td{
+padding:10px;
+border:1px solid #eee;
+text-align:center;
+}
+
+th{
+background:#6a1b9a;
+color:white;
+white-space:nowrap;
+}
+
+tr:nth-child(even){
+background:#f9f6fc;
+}
+
+button{
+padding:6px 10px;
+border:none;
+cursor:pointer;
+margin:2px;
+border-radius:6px;
+font-size:12px;
+color:white;
+}
+
+.editar{background:#9c27b0;}
+.guardar{background:#4caf50; display:none;}
+.cancelar{background:#ff9800; display:none;}
+.eliminar{background:#e53935;}
+
+.mensaje{
+display:none;
+padding:12px;
+margin-bottom:15px;
+border-radius:10px;
+font-weight:bold;
+text-align:center;
+}
+
+.exito{background:#d4edda; color:#155724;}
+.error{background:#f8d7da; color:#721c24;}
+</style>
+</head>
+
+<body>
+
+<header>
+<div class="user-text">Sistema De Registro DIF</div>
+<div id="nombreUsuario"></div>
+</header>
+
+<div class="contenedor">
+
+<button class="regresar" onclick="regresar()">⬅ Regresar</button>
+
+<div id="mensaje" class="mensaje"></div>
+
+<table id="tablaDatos">
+
+<thead>
+<tr>
+<th>✔</th>
+<th>ID</th>
+<th>Apellido P</th>
+<th>Apellido M</th>
+<th>Nombre</th>
+<th>Fecha Nacimiento</th>
+<th>CURP</th>
+<th>Teléfono</th>
+<th>Domicilio</th>
+<th>CP</th>
+<th>Localidad</th>
+<th>Municipio</th>
+<th>Responsable</th>
+<th>Tel Responsable</th>
+<th>Sexo</th>
+<th>Edad</th>
+<th>Diagnóstico</th>
+<th>Origen</th>
+<th>Destino</th>
+<th>No. de Traslado</th>
+<th>Usuario</th>
+<th>Ficha</th>
+<th>Fecha Registro</th>
+<th>Acciones</th>
+</tr>
+</thead>
+
+<tbody></tbody>
+
+</table>
+
+<!-- BOTONES EXCEL -->
+<div style="margin-top:20px; display:flex; gap:10px; flex-wrap:wrap;">
+
+<input type="file" id="excelFile" accept=".xlsx,.xls" style="display:none">
+
+<button onclick="seleccionarExcel()">📂 Seleccionar Excel</button>
+
+<button onclick="activarSeleccion()">📋 Aplanar a Excel</button>
+
+<button id="btnGuardarExcel" onclick="exportarExcel()" style="display:none; background:#2e7d32;">
+💾 Guardar en Excel
+</button>
+
+</div>
+
+</div>
+
+<script>
+
+/* SESIÓN */
+const usuarioSesion = localStorage.getItem('usuario');
+if (!usuarioSesion) window.location.replace('index.html');
+
+document.getElementById('nombreUsuario').textContent =
+`Administrador: ${usuarioSesion}`;
+
+/* MENSAJES */
+function mostrarMensaje(texto,tipo){
+let m=document.getElementById("mensaje");
+m.innerText=texto;
+m.className="mensaje "+tipo;
+m.style.display="block";
+setTimeout(()=>{m.style.display="none";},3000);
+}
+
+/* CARGAR DATOS */
+function cargarDatos(){
+
+fetch("datossubidos.php")
+.then(res=>res.json())
+.then(data=>{
+
+const tabla=document.querySelector("#tablaDatos tbody");
+tabla.innerHTML="";
+
+data.forEach(d=>{
+
+tabla.innerHTML+=`
+<tr>
+
+<td><input type="checkbox" class="checkPersona" style="display:none" value='${JSON.stringify(d)}'></td>
+
+<td>${d.id}</td>
+
+<td contenteditable="false">${d.apellido_paterno}</td>
+<td contenteditable="false">${d.apellido_materno}</td>
+<td contenteditable="false">${d.nombre}</td>
+<td contenteditable="false">${d.fecha_nacimiento}</td>
+<td contenteditable="false">${d.curp}</td>
+<td contenteditable="false">${d.telefono}</td>
+<td contenteditable="false">${d.domicilio}</td>
+<td contenteditable="false">${d.codigo_postal}</td>
+<td contenteditable="false">${d.localidad}</td>
+<td contenteditable="false">${d.municipio}</td>
+<td contenteditable="false">${d.nombre_responsable}</td>
+<td contenteditable="false">${d.telefono_responsable}</td>
+<td contenteditable="false">${d.sexo}</td>
+<td contenteditable="false">${d.edad}</td>
+<td contenteditable="false">${d.diagnostico}</td>
+<td contenteditable="false">${d.origen}</td>
+<td contenteditable="false">${d.destino}</td>
+<td contenteditable="false">${d.no_traslado}</td>
+
+<td>${d.usuario_registro}</td>
+<td contenteditable="false">${d.ficha_registro}</td>
+<td>${d.fecha_registro}</td>
+
+<td>
+<button class="editar" onclick="editarFila(this)">Editar</button>
+<button class="guardar" onclick="guardarFila(this,${d.id})">Guardar</button>
+<button class="cancelar" onclick="cargarDatos()">Cancelar</button>
+<button class="eliminar" onclick="eliminarDato(${d.id})">Eliminar</button>
+</td>
+
+</tr>
+`;
+
+});
+
+});
+
+}
+
+/* EDITAR */
+function editarFila(btn){
+let fila=btn.parentNode.parentNode;
+
+for(let i=1;i<=20;i++){
+fila.children[i].contentEditable="true";
+}
+
+btn.style.display="none";
+fila.querySelector(".guardar").style.display="inline-block";
+fila.querySelector(".cancelar").style.display="inline-block";
+}
+
+/* MAYUSCULAS */
+document.addEventListener("input", function(e){
+if(e.target.isContentEditable){
+let celda = e.target;
+let index = celda.cellIndex;
+if(index !== 19 && index !== 20 && index !== 21){
+celda.innerText = celda.innerText.toUpperCase();
+}
+}
+});
+
+/* GUARDAR */
+function guardarFila(btn,id){
+
+let fila=btn.parentNode.parentNode;
+
+let datos={
+accion:"editar",
+id:id,
+
+apellido_paterno:fila.children[2].innerText,
+apellido_materno:fila.children[3].innerText,
+nombre:fila.children[4].innerText,
+fecha_nacimiento:fila.children[5].innerText,
+curp:fila.children[6].innerText,
+telefono:fila.children[7].innerText,
+domicilio:fila.children[8].innerText,
+codigo_postal:fila.children[9].innerText,
+localidad:fila.children[10].innerText,
+municipio:fila.children[11].innerText,
+nombre_responsable:fila.children[12].innerText,
+telefono_responsable:fila.children[13].innerText,
+sexo:fila.children[14].innerText,
+edad:fila.children[15].innerText,
+diagnostico:fila.children[16].innerText,
+origen:fila.children[17].innerText,
+destino:fila.children[18].innerText,
+no_traslado:fila.children[19].innerText,
+ficha_registro:fila.children[21].innerText
+};
+
+fetch("gestionar_datossubidos.php",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify(datos)
+})
+.then(res=>res.json())
+.then(r=>{
+if(r.success){
+mostrarMensaje("Guardado correctamente","exito");
+cargarDatos();
+}else{
+mostrarMensaje("Error al guardar","error");
+}
+});
+}
+
+/* ELIMINAR */
+function eliminarDato(id){
+if(!confirm("¿Eliminar registro?")) return;
+
+fetch("gestionar_datossubidos.php",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({accion:"eliminar",id:id})
+})
+.then(res=>res.json())
+.then(r=>{
+if(r.success){
+mostrarMensaje("Registro eliminado","exito");
+cargarDatos();
+}else{
+mostrarMensaje("Error al eliminar","error");
+}
+});
+}
+
+/* EXCEL */
+let excelSeleccionado=false;
+
+function seleccionarExcel(){
+document.getElementById("excelFile").click();
+}
+
+document.getElementById("excelFile").addEventListener("change",function(){
+if(this.files.length>0){
+excelSeleccionado=true;
+mostrarMensaje("Excel seleccionado ✅","exito");
+}
+});
+
+function activarSeleccion(){
+
+if(!excelSeleccionado){
+mostrarMensaje("⚠ No has seleccionado un Excel","error");
+return;
+}
+
+document.querySelectorAll(".checkPersona").forEach(c=>{
+c.style.display="inline-block";
+});
+
+document.getElementById("btnGuardarExcel").style.display="inline-block";
+}
+
+function exportarExcel(){
+
+let seleccionados=[];
+
+document.querySelectorAll(".checkPersona:checked").forEach(c=>{
+seleccionados.push(JSON.parse(c.value));
+});
+
+if(seleccionados.length===0){
+mostrarMensaje("⚠ No seleccionaste personas","error");
+return;
+}
+
+let contenido="APELLIDO_PATERNO,APELLIDO_MATERNO,NOMBRE,FECHA_NACIMIENTO,CURP,TELEFONO,DOMICILIO,CP,LOCALIDAD,MUNICIPIO,RESPONSABLE,TEL_RESPONSABLE,SEXO,EDAD,DIAGNOSTICO,ORIGEN,DESTINO,NO_TRASLADO\n";
+
+seleccionados.forEach(p=>{
+contenido+=`${p.apellido_paterno},${p.apellido_materno},${p.nombre},${p.fecha_nacimiento},${p.curp},${p.telefono},${p.domicilio},${p.codigo_postal},${p.localidad},${p.municipio},${p.nombre_responsable},${p.telefono_responsable},${p.sexo},${p.edad},${p.diagnostico},${p.origen},${p.destino},${p.no_traslado}\n`;
+});
+
+let blob=new Blob([contenido],{type:"text/csv;charset=utf-8;"});
+let link=document.createElement("a");
+link.href=URL.createObjectURL(blob);
+link.download="beneficiarios.csv";
+link.click();
+
+mostrarMensaje("Excel generado correctamente ✅","exito");
+}
+
+/* REGRESAR */
+function regresar(){
+window.location.replace("administrador.html");
+}
+
+cargarDatos();
+
+</script>
+
+</body>
+</html>

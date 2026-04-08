@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Registro de Beneficiario</title>
+
+<style>
+/* FONDO GENERAL */
+body{
+    margin:0;
+    font-family: Arial, Helvetica, sans-serif;
+    background:#e6dcff;
+}
+
+/* HEADER */
+header{
+    background:#6a5acd;
+    color:white;
+    padding:15px;
+    text-align:center;
+    font-size:22px;
+    font-weight:bold;
+    box-shadow:0 3px 10px rgba(0,0,0,0.3);
+}
+
+/* CONTENEDOR */
+.container{
+    max-width:700px;
+    margin:40px auto;
+    background:white;
+    padding:35px 45px;
+    border-radius:15px;
+    box-shadow:0 8px 25px rgba(0,0,0,0.2);
+}
+
+/* TITULO */
+h1{
+    text-align:center;
+    color:#6a5acd;
+}
+
+.subtitle{
+    text-align:center;
+    color:#555;
+    margin-bottom:25px;
+}
+
+/* FORMULARIO */
+form{
+    display:flex;
+    flex-direction:column;
+    gap:15px;
+}
+
+/* LABELS */
+label{
+    font-weight:bold;
+}
+
+/* INPUTS */
+input, textarea, select{
+    padding:11px;
+    border:1px solid #ccc;
+    border-radius:8px;
+    font-size:14px;
+    width:100%;
+    box-sizing:border-box;
+    text-transform:uppercase;
+}
+
+/* EFECTO INPUT */
+input:focus, textarea:focus{
+    outline:none;
+    border-color:#6a5acd;
+    box-shadow:0 0 5px rgba(106,90,205,0.4);
+}
+
+/* RADIO */
+.radio-group{
+    display:flex;
+    gap:20px;
+}
+
+/* COLUMNAS */
+.row{
+    display:flex;
+    gap:15px;
+}
+
+.row .col{
+    flex:1;
+}
+
+/* BOTONES */
+button{
+    background:#6a5acd;
+    color:white;
+    padding:13px;
+    border:none;
+    border-radius:10px;
+    font-size:16px;
+    font-weight:bold;
+    cursor:pointer;
+    margin-top:10px;
+    width:100%;
+}
+
+button:hover{
+    background:#5747b8;
+}
+
+/* 🔥 BOTON REGRESAR COLOR VINO */
+.btn-regresar{
+    background:#800020;
+}
+
+.btn-regresar:hover{
+    background:#5c0016;
+}
+
+/* MENSAJE */
+#mensaje {
+    text-align:center;
+    margin-top:20px;
+    font-weight:bold;
+    font-size:16px;
+    padding:15px;
+    border-radius:8px;
+    display:none;
+}
+
+/* RESPONSIVE */
+@media(max-width:700px){
+.row{
+flex-direction:column;
+}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+Sistema de Registro DIF Municipal
+</header>
+
+<div class="container">
+
+<h1>Registro de Beneficiario</h1>
+<p class="subtitle">Ingrese los datos del beneficiario</p>
+
+<form id="formBeneficiario">
+
+<div class="row">
+<div class="col">
+<label>Apellido Paterno</label>
+<input type="text" name="apellido_paterno" required>
+</div>
+<div class="col">
+<label>Apellido Materno</label>
+<input type="text" name="apellido_materno" required>
+</div>
+</div>
+
+<label>Nombre(s)</label>
+<input type="text" name="nombres" required>
+
+<label>Fecha de Nacimiento</label>
+<input type="date" name="fecha_nacimiento" required>
+
+<label>CURP</label>
+<input type="text" name="curp" maxlength="18" required>
+
+<label>Teléfono del Beneficiario</label>
+<input type="tel" name="telefono_beneficiario" required>
+
+<label>Domicilio</label>
+<textarea name="domicilio" rows="2" required></textarea>
+
+<div class="row">
+<div class="col">
+<label>Código Postal</label>
+<input type="text" name="codigo_postal" required>
+</div>
+<div class="col">
+<label>Localidad</label>
+<input type="text" name="localidad" required>
+</div>
+</div>
+
+<label>Municipio</label>
+<input type="text" name="municipio" required>
+
+<label>Nombre del Responsable</label>
+<input type="text" name="nombre_responsable" required>
+
+<label>Teléfono del Responsable</label>
+<input type="tel" name="telefono_responsable" required>
+
+<div class="row">
+<div class="col">
+<label>Sexo</label>
+<div class="radio-group">
+<label><input type="radio" name="sexo" value="MASCULINO" required> Masculino</label>
+<label><input type="radio" name="sexo" value="FEMENINO"> Femenino</label>
+</div>
+</div>
+<div class="col">
+<label>Edad</label>
+<input type="number" name="edad" required>
+</div>
+</div>
+
+<label>Diagnóstico</label>
+<input type="text" name="diagnostico" required>
+
+<label>Origen</label>
+<input type="text" name="origen" required>
+
+<button type="submit">Registrar Beneficiario</button>
+<button type="button" class="btn-regresar" onclick="window.location.href='realizar.html'">Regresar</button>
+
+</form>
+
+<div id="mensaje"></div>
+
+</div>
+
+<script>
+/* MAYUSCULAS AUTOMATICAS */
+document.querySelectorAll("input[type='text'], textarea").forEach(input => {
+    input.addEventListener("input", function(){
+        this.value = this.value.toUpperCase();
+    });
+});
+
+/* ENVIO AJAX */
+const form = document.getElementById("formBeneficiario");
+const mensaje = document.getElementById("mensaje");
+
+form.addEventListener("submit", function(e){
+    e.preventDefault();
+    const formData = new FormData(form);
+
+    fetch("guardar_beneficiario.php", {
+        method: "POST",
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        mensaje.style.display = "block";
+        if(data.success){
+            mensaje.style.background = "#d4edda";
+            mensaje.style.color = "#155724";
+            mensaje.innerHTML = `✅ ${data.mensaje}<br>
+                                 Registrado por: <b>${data.usuario}</b><br>
+                                 Ficha: <b>${data.ficha}</b><br>
+                                 Fecha: <b>${data.fecha}</b>`;
+            form.reset();
+
+            setTimeout(() => {
+                window.location.reload();
+                window.location.href = "realizar.html";
+            }, 2000);
+        } else {
+            mensaje.style.background = "#f8d7da";
+            mensaje.style.color = "#721c24";
+            mensaje.textContent = "❌ " + data.mensaje;
+        }
+    })
+    .catch(() => {
+        mensaje.style.display = "block";
+        mensaje.style.background = "#f8d7da";
+        mensaje.style.color = "#721c24";
+        mensaje.textContent = "❌ Error en la conexión";
+    });
+});
+</script>
+
+</body>
+</html>

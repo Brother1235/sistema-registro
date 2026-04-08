@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Administrador - Subir Imagen</title>
+
+<style>
+body{
+    margin:0;
+    font-family: Arial, Helvetica, sans-serif;
+    background:#4a148c;
+}
+
+/* 🔥 HEADER MÁS EQUILIBRADO */
+header{
+    background:#9c27b0;
+    color:white;
+    padding:15px 25px; /* ✔ tamaño medio */
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+/* TEXTO IZQUIERDO */
+.user-text{
+    font-size:22px; /* ✔ no tan grande */
+    font-weight:bold;
+}
+
+/* TEXTO ADMIN */
+#nombreUsuario{
+    font-size:18px;
+    font-weight:bold;
+    background:white;
+    color:#4a148c;
+    padding:6px 12px;
+    border-radius:8px;
+}
+
+/* CONTENIDO */
+.container{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    min-height:90vh;
+}
+
+.card{
+    background:white;
+    padding:40px;
+    border-radius:12px;
+    box-shadow:0 5px 15px rgba(0,0,0,0.2);
+    width:400px;
+    text-align:center;
+}
+
+.card h2{
+    color:#4a148c;
+    margin-bottom:20px;
+}
+
+input[type="file"]{
+    width:100%;
+    margin:15px 0;
+    padding:10px;
+    border-radius:8px;
+    border:1px solid #ccc;
+}
+
+button{
+    width:100%;
+    padding:15px;
+    margin-top:10px;
+    border:none;
+    border-radius:8px;
+    background:#9c27b0;
+    color:white;
+    font-size:15px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+button:hover{
+    background:#7b1fa2;
+}
+
+.cancel-btn{
+    background:#999;
+}
+
+.cancel-btn:hover{
+    background:#777;
+}
+
+.regresar{
+    display:block;
+    margin-top:15px;
+    background:#4a148c;
+    padding:12px;
+    color:white;
+    text-decoration:none;
+    border-radius:8px;
+    text-align:center;
+}
+
+.regresar:hover{
+    background:#6a1b9a;
+}
+
+/* VISTA PREVIA */
+.preview-img{
+    margin-top:15px;
+    width:200px;
+    height:200px;
+    object-fit:cover;
+    border-radius:10px;
+    border:1px solid #ccc;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <div class="user-text">Sistema De Registro DIF</div>
+    <div id="nombreUsuario"></div>
+</header>
+
+<div class="container">
+    <div class="card">
+        <h2>Subir Imagen</h2>
+        <form action="subirunica.php" method="POST" enctype="multipart/form-data">
+            <input type="file" name="imagen" accept="image/*" id="imagenInput" required>
+            <img src="imagenes2/imagen.jpg" id="preview" class="preview-img" onerror="this.style.display='none'">
+            <button type="submit">Subir Imagen</button>
+            <button type="button" class="cancel-btn" onclick="cancelForm()">Cancelar</button>
+        </form>
+        <a class="regresar" href="administrador.html">⬅ Volver al sistema</a>
+    </div>
+</div>
+
+<script>
+// SESIÓN
+const usuarioSesion = localStorage.getItem('usuario');
+if(!usuarioSesion){
+    window.location.replace('index.html');
+}
+
+/* 🔥 AQUÍ EL CAMBIO */
+document.getElementById('nombreUsuario').textContent = `Administrador: ${usuarioSesion}`;
+
+// CANCELAR FORM
+function cancelForm(){
+    const form = document.querySelector('form');
+    form.reset();
+    document.getElementById('preview').style.display = 'none';
+}
+
+// PREVIEW DINÁMICO
+const input = document.getElementById('imagenInput');
+const preview = document.getElementById('preview');
+
+input.addEventListener('change', function(){
+    const file = this.files[0];
+    if(file){
+        const reader = new FileReader();
+        reader.onload = function(e){
+            preview.src = e.target.result;
+            preview.style.display = 'block';
+        }
+        reader.readAsDataURL(file);
+    }
+});
+</script>
+
+</body>
+</html>

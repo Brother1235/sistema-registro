@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sistema de Registro</title>
+
+<style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+
+/* 🔥 FONDO GENERAL */
+body{
+font-family: Arial, Helvetica, sans-serif;
+min-height:100vh;
+display:flex;
+flex-direction:column;
+background:#f5f5f5;
+}
+
+/* HEADER */
+header{
+background:#4a148c;
+color:white;
+padding:15px 40px;
+display:flex;
+align-items:center;
+position:relative;
+flex-wrap:wrap; /* 🔥 clave para celular */
+}
+
+/* USUARIO */
+.user-box{
+display:flex;
+align-items:center;
+gap:10px;
+}
+.user-box img{
+width:clamp(50px,10vw,70px);
+height:clamp(50px,10vw,70px);
+border-radius:50%;
+}
+#nombreUsuario{
+font-size:clamp(16px,4vw,26px);
+font-weight:bold;
+}
+
+/* TITULO */
+.titulo{
+position:absolute;
+left:50%;
+transform:translateX(-50%);
+text-align:center;
+}
+.titulo h1{
+margin:0;
+font-size:clamp(16px,4vw,28px);
+}
+.titulo p{
+margin:0;
+font-size:clamp(10px,3vw,16px);
+}
+
+/* CONFIGURACIONES */
+.top-buttons{
+margin-left:auto;
+position:relative;
+}
+.top-buttons button{
+background:#9c27b0;
+border:none;
+padding:6px 10px;
+border-radius:6px;
+color:white;
+cursor:pointer;
+font-weight:bold;
+font-size:clamp(10px,2.5vw,12px);
+}
+.top-buttons button:hover{
+background:#7b1fa2;
+}
+
+/* MENU */
+.menu{
+display:none;
+position:absolute;
+top:38px;
+right:0;
+background:white;
+border-radius:8px;
+box-shadow:0 3px 8px rgba(0,0,0,0.3);
+flex-direction:column; /* 🔥 mejor en celular */
+}
+.menu div{
+padding:10px 18px;
+color:white;
+font-weight:bold;
+cursor:pointer;
+text-align:center;
+font-size:12px;
+}
+.btn-datos{ background:#3498db; }
+.btn-ayuda{ background:#27ae60; }
+.btn-editar{ background:#e67e22; }
+.btn-regresar{ background:#8e44ad; }
+.menu div:hover{opacity:0.85;}
+
+/* CONTENEDOR */
+.container{
+width:90%;
+max-width:1000px;
+margin:auto;
+margin-top:15px;
+}
+
+/* TARJETA */
+.card{
+background:white;
+border-radius:12px;
+box-shadow:0 3px 8px rgba(0,0,0,0.1);
+margin-bottom:30px;
+overflow:hidden;
+}
+
+/* HEADER TARJETA */
+.card-header{
+background:#4a148c;
+color:white;
+padding:12px 20px;
+font-weight:bold;
+}
+
+/* CONSEJO */
+.consejo-box{
+background:#f3e5f5;
+color:#4a148c;
+padding:12px 15px;
+font-size:clamp(14px,3vw,20px);
+font-weight:bold;
+text-align:center;
+border-bottom:2px solid #9c27b0;
+}
+
+/* CARRUSEL */
+.slider{
+position:relative;
+overflow:hidden;
+}
+.slide{
+display:none;
+}
+.slide img{
+width:100%;
+height:clamp(180px,40vw,350px); /* 🔥 adaptable */
+object-fit:cover;
+}
+.active{display:block;}
+
+/* BOTONES */
+.big-button{
+width:100%;
+background:#9c27b0;
+padding:15px;
+text-align:center;
+color:white;
+border-radius:12px;
+font-size:clamp(16px,4vw,20px);
+font-weight:bold;
+cursor:pointer;
+margin-bottom:15px;
+margin-top:20px;
+}
+.big-button:hover{
+background:#7b1fa2;
+}
+
+.btn-cerrar{
+background:#6d1830;
+}
+.btn-cerrar:hover{
+background:#4a0f20;
+}
+
+/* 🔥 RESPONSIVE CELULAR */
+@media (max-width:768px){
+
+header{
+padding:10px;
+flex-direction:column;
+align-items:flex-start;
+}
+
+.titulo{
+position:static;
+transform:none;
+width:100%;
+margin-top:10px;
+text-align:center;
+}
+
+.top-buttons{
+width:100%;
+margin-top:10px;
+text-align:right;
+}
+
+.container{
+width:95%;
+}
+
+.menu{
+right:10px;
+}
+
+}
+</style>
+</head>
+
+<body>
+
+<header>
+
+<div class="user-box">
+<img src="https://cdn-icons-png.flaticon.com/512/149/149071.png">
+<span id="nombreUsuario">Usuario</span>
+</div>
+
+<div class="titulo">
+<h1>SISTEMA DE REGISTRO DE DATOS</h1>
+<p>DIF DE CALPULALPAN TLAXCALA</p>
+</div>
+
+<div class="top-buttons">
+<button onclick="toggleMenu()">CONFIGURACIONES</button>
+
+<div class="menu" id="menuConfig">
+<div class="btn-datos" onclick="window.location.href='ver_datos.php'">Mis datos</div>
+<div class="btn-ayuda" onclick="window.location.href='ayuda.php'">Ayuda</div>
+<div class="btn-editar" onclick="window.location.href='editar_usuario.php'">Editar perfil</div>
+<div class="btn-regresar" onclick="cerrarMenu()">Regresar</div>
+</div>
+
+</div>
+</header>
+
+<div class="container">
+
+<div class="card">
+
+<div class="card-header">COMENTARIO</div>
+
+<div class="consejo-box" id="consejoPrincipal">
+Cargando consejo...
+</div>
+
+<div class="slider">
+
+<div class="slide active">
+<img id="img1">
+</div>
+
+<div class="slide">
+<img id="img2">
+</div>
+
+<div class="slide">
+<img id="img3">
+</div>
+
+<div class="slide">
+<img id="img4">
+</div>
+
+</div>
+</div>
+
+<div class="big-button" onclick="verificarDatos()">SUBIR MIS DATOS →</div>
+<div class="big-button btn-cerrar" onclick="cerrarSesion()">CERRAR SESIÓN →</div>
+
+</div>
+
+<script>
+
+/* USUARIO */
+const usuario = localStorage.getItem('usuario');
+if(!usuario){
+window.location.href='index.html';
+}else{
+document.getElementById('nombreUsuario').textContent = usuario;
+}
+
+/* MENU */
+function toggleMenu(){
+const menu = document.getElementById("menuConfig");
+menu.style.display = (menu.style.display === "flex") ? "none" : "flex";
+}
+
+function cerrarMenu(){
+document.getElementById("menuConfig").style.display="none";
+}
+
+/* CARRUSEL */
+let slideIndex = 0;
+const slides = document.querySelectorAll(".slide");
+
+function showSlides(){
+slides.forEach(slide => slide.classList.remove("active"));
+slideIndex++;
+if(slideIndex > slides.length){ slideIndex = 1; }
+slides[slideIndex-1].classList.add("active");
+}
+setInterval(showSlides,4000);
+
+/* IMAGENES */
+const timestamp = new Date().getTime();
+document.getElementById("img1").src = `imagenes1/imagen1.jpg?v=${timestamp}`;
+document.getElementById("img2").src = `imagenes1/imagen2.jpg?v=${timestamp}`;
+document.getElementById("img3").src = `imagenes1/imagen3.jpg?v=${timestamp}`;
+document.getElementById("img4").src = `imagenes1/imagen4.jpg?v=${timestamp}`;
+
+/* CONSEJO */
+fetch("obtener_consejo.php")
+.then(res => res.json())
+.then(data => {
+document.getElementById("consejoPrincipal").textContent =
+data.comentario || "Sin consejo disponible";
+})
+.catch(() => {
+document.getElementById("consejoPrincipal").textContent =
+"Error al cargar el consejo";
+});
+
+/* BOTONES */
+function verificarDatos(){
+fetch("verificar_datos.php")
+.then(res => res.json())
+.then(data => {
+if(data.existe){
+alert("Ya registraste tus datos");
+}else{
+window.location.href = "subir_datos.html";
+}
+});
+}
+
+function cerrarSesion(){
+localStorage.clear();
+window.location.href='index.html';
+}
+
+</script>
+
+</body>
+</html>
